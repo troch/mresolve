@@ -1,0 +1,35 @@
+{
+  "name": "mresolve",
+  "version": "0.1.0",
+  "description": "Resolve module dependencies to paths",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "_mocha",
+    "build": "babel modules/index.js > dist/index.js",
+    "test-cover": "istanbul/lib/cli.js cover _mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/troch/mresolve.git"
+  },
+  "keywords": [
+    "module",
+    "dependencies",
+    "resolve"
+  ],
+  "author": "Thomas Roch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/troch/mresolve/issues"
+  },
+  "homepage": "https://github.com/troch/mresolve#readme",
+  "dependencies": {
+    "file-exists": "^0.1.1",
+    "listdirs": "^3.0.0"
+  },
+  "devDependencies": {
+    "istanbul": "^0.3.20",
+    "mocha": "^2.3.3",
+    "should": "^7.1.0"
+  }
+}
