@@ -12,6 +12,41 @@ describe('mresolve', function () {
         paths: ['']
     });
 
+    it('should throw an error if no dependency is given', function () {
+        (function() {
+            resolver.resolveDependency();
+        }).should.throw();
+    });
+
+    it('should throw an error if no relative directory is given for a relative dependency', function () {
+        (function() {
+            resolver.resolveDependency('../a');
+        }).should.throw();
+    });
+
+    it('should throw an error if no relative directory is given for a relative dependency', function () {
+        (function() {
+            resolver.resolveDependency('../a');
+        }).should.throw();
+    });
+
+    it('should throw an error if it cannot access package info of an npm dependency', function () {
+        (function() {
+            resolver.resolveDependency('modC');
+        }).should.throw();
+    });
+
+    it('should throw an error if a dependency is not found and no additional path was configured', function () {
+        var resolver = resolve({
+            base: path.join(process.cwd(), 'example'),
+            paths: []
+        });
+
+        (function() {
+            resolver.resolveDependency('modD');
+        }).should.throw();
+    });
+
     it('should resolve npm dependencies', function () {
 
         var dependencyInfo = resolver.resolveDependency('modA');

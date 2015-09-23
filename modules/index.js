@@ -70,7 +70,7 @@ function resolve(opts = {}) {
             if (isRelative(dependency)) {
                 if (!relativeTo) throw new Error(`[mresolve] missing relativeTo in resolve(dependency, relativeTo) for relative path ${dependency}`);
                 dependency = path.relative(opts.base, path.join(opts.base, relativeTo, dependency));
-                let possiblePaths = getPossiblePaths(dependency, '');
+                let possiblePaths = getPossiblePaths(dependency);
                 return result(dependency, possiblePaths);
             } else if (npmDependencies.indexOf(names[0]) !== -1) {
                 if (names.length === 1) {

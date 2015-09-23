@@ -6,7 +6,7 @@
   "scripts": {
     "test": "_mocha",
     "build": "babel modules/index.js > dist/index.js",
-    "test-cover": "istanbul/lib/cli.js cover _mocha"
+    "test-cover": "./node_modules/istanbul/lib/cli.js cover _mocha"
   },
   "repository": {
     "type": "git",
