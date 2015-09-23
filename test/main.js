@@ -6,12 +6,13 @@ var should          = require('should');
 
 require('mocha');
 
-describe('mresolve', function() {
-    it('should resolve npm dependencies', function() {
-        var resolver = resolve({
-            base: path.join(process.cwd(), 'example'),
-            paths: ['']
-        });
+describe('mresolve', function () {
+    var resolver = resolve({
+        base: path.join(process.cwd(), 'example'),
+        paths: ['']
+    });
+
+    it('should resolve npm dependencies', function () {
 
         var dependencyInfo = resolver.resolveDependency('modA');
 
@@ -19,16 +20,58 @@ describe('mresolve', function() {
         dependencyInfo.npmDependency.should.be.true;
         dependencyInfo.possiblePaths.should.eql(['node_modules/modA/index.js']);
 
+
         dependencyInfo = resolver.resolveDependency('modB');
 
         dependencyInfo.dependencyName.should.equal('modB');
         dependencyInfo.npmDependency.should.be.true;
         dependencyInfo.possiblePaths.should.eql(['node_modules/modB/dist/index.js', 'node_modules/modB/dist/index/index.js']);
 
+
         dependencyInfo = resolver.resolveDependency('modA/component');
 
         dependencyInfo.dependencyName.should.equal('modA/component');
         dependencyInfo.npmDependency.should.be.true;
         dependencyInfo.possiblePaths.should.eql(['node_modules/modA/component.js', 'node_modules/modA/component/index.js']);
+
+
+        dependencyInfo = resolver.resolveDependency('modA/component.js');
+
+        dependencyInfo.dependencyName.should.equal('modA/component.js');
+        dependencyInfo.npmDependency.should.be.true;
+        dependencyInfo.possiblePaths.should.eql(['node_modules/modA/component.js']);
+    });
+
+    it('should resolve relative dependencies', function () {
+        var dependencyInfo = resolver.resolveDependency('../app/components/dropdown', 'b');
+
+        dependencyInfo.dependencyName.should.equal('app/components/dropdown');
+        dependencyInfo.npmDependency.should.be.false;
+        dependencyInfo.possiblePaths.should.eql(['app/components/dropdown.js', 'app/components/dropdown/index.js']);
+
+        var dependencyInfo = resolver.resolveDependency('../view/home', 'app/components');
+
+        dependencyInfo.dependencyName.should.equal('app/view/home');
+        dependencyInfo.npmDependency.should.be.false;
+        dependencyInfo.possiblePaths.should.eql(['app/view/home.js', 'app/view/home/index.js']);
+    });
+
+    it('should resolve absolute dependencies', function () {
+        var resolver = resolve({
+            base: path.join(process.cwd(), 'example'),
+            paths: ['app']
+        });
+
+        var dependencyInfo = resolver.resolveDependency('components/dropdown');
+
+        dependencyInfo.dependencyName.should.equal('components/dropdown');
+        dependencyInfo.npmDependency.should.be.false;
+        dependencyInfo.possiblePaths.should.eql(['app/components/dropdown.js', 'app/components/dropdown/index.js']);
+
+        var dependencyInfo = resolver.resolveDependency('view/home');
+
+        dependencyInfo.dependencyName.should.equal('view/home');
+        dependencyInfo.npmDependency.should.be.false;
+        dependencyInfo.possiblePaths.should.eql(['app/view/home.js', 'app/view/home/index.js']);
     });
 });
