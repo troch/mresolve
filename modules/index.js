@@ -1,49 +1,96 @@
 import path from 'path';
-import listDirectories from './list-directories';
-import fileExists from 'file-exists';
 
 let defaultOpts = {
-    basePath: process.cwd(),
-    paths: ['node_modules'],
+    base: process.cwd(),
+    paths: [''],
     extensions: ['.js'],
-    exclude: [],
-    ignore: [],
     moduleDirectory: 'node_modules'
 };
 
-function resolve(opts = defaultOpts) {
-    let npmDependencies = [];
-    let dependencyMains = {};
+let npmRegistry = {};
 
+function getPackage(dir = '') {
     try {
-        let pkg = require(path.join(opts.basePath, 'package.json'));
-        npmDependencies = Object.keys(pkg.dependencies);
+        if (npmRegistry[dir]) return npmRegistry[dir];
+        let pkg = require(path.join(dir, 'package.json'));
+        npmRegistry[dir] = pkg;
+        return pkg;
     } catch (e) {
-        throw new Error(`[mresolve] could not find package.json in '${opts.basePath}'`);
+        throw new Error(`[mresolve] could not find package.json in '${dir}'`);
+    }
+}
+
+function getDependencies(pkg) {
+    return Object.keys(pkg.dependencies || {});
+}
+
+function getMain(pkg) {
+    return pkg.main || 'index.js';
+}
+
+function isRelative(path) {
+    return /^\.{1,2}(?:\/|\\)/.test(path);
+}
+
+function resolve(opts = defaultOpts) {
+    let npmDependencies = getDependencies(getPackage(opts.base));
+
+    function result(dependencyName, directory = '') {
+        return {
+            base: opts.base,
+            dependencyName,
+            npmDependency: false,
+            possiblePaths: getPossiblePaths(dependencyName, directory)
+        }
     }
 
-    let paths = opts.paths
-        .map(p => {
-            let list = listDirectories(p, opts.basePath);
-            list.dir = p;
-            return list;
+    function npmResult(dependencyName, main) {
+        return {
+            base: opts.base,
+            dependencyName,
+            npmDependency: true,
+            possiblePaths: [main]
+        }
+    }
+
+    function getPossiblePaths(fromPath, directory = '') {
+        let possiblePaths = [];
+
+        opts.extensions.forEach(ext => {
+            possiblePaths.push(path.join(directory, fromPath, 'index' + ext));
+            if (!/(\\|\/)$/.test(fromPath)) {
+                possiblePaths.push(path.join(directory, fromPath + ext));
+            }
         });
 
-    paths = paths.length > 1 ? paths.reduce((p1, p2) => p1.concat(p2)) : (paths[0] || paths);
+        return possiblePaths;
+    }
 
     return {
-        resolveDependency: function(dependency) {
-            // if (!dependency) return;
-            // let names = dependency.split('/');
-            console.log(paths);
-            // if (npmDependencies.indexOf(names[0]) !== -1) {
-            //     if (names.length === 1) {
+        resolveDependency: function(dependency, dir) {
+            // console.log(Object.keys(path), path.relative(opts.base, path.join(path.join(opts.base, 'modules'), '../dist/index.js')));
+            // console.log(result('dist'));
+
+            if (!dependency) throw new Error(`[mresolve] missing dependency string in resolve(dependency)`);
+            let names = dependency.split('/');
+            let possiblePaths = [];
+
+            if (isRelative(dependency)) {
+                if (!dir) throw new Error(`[mresolve] missing directory in resolve(dependency, directory) for relative path ${dependency}`);
+                // opts.paths.forEach(p => {
+                //     opts.extensions.forEach()
+                // });
+            } else if (npmDependencies.indexOf(names[0]) !== -1) {
+                if (names.length === 1) {
+                    let pkg = getPackage(path.join(opts.base, opts.moduleDirectory, names[0]));
+                    return npmResult(dependency, getMain(pkg));
+                }
             //         if (dependencyMains[names[0]]) return dependencyMains[0];
             //         return fileExists(dependency)
             //     } else {
             //         return fileExi
             //     }
-            // }
+            }
         }
     };
 };

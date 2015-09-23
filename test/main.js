@@ -9,6 +9,7 @@ require('mocha');
 describe('mresolve', function() {
     it('should initialise itself first', function() {
         var resolver = resolve();
-        resolver.resolveDependency();
+        var dependencyInfo = resolver.resolveDependency('file-exists');
+        console.log(dependencyInfo);
     });
 });
