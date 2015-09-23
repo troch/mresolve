@@ -1,6 +1,7 @@
 {
     "dependencies": {
         "modA": "0.0.0",
-        "modB": "0.0.0"
+        "modB": "0.0.0",
+        "modC": "0.0.0"
     }
 }
