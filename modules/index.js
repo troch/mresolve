@@ -53,7 +53,6 @@ function resolve(opts = {}) {
         let possiblePaths = [];
 
         (extensions || opts.extensions).forEach(ext => {
-            console.log(possiblePaths);
             if (!/(\\|\/)$/.test(fromPath)) {
                 possiblePaths.push(path.join(directory, fromPath + ext));
             }
@@ -78,8 +77,8 @@ function resolve(opts = {}) {
                     let pkg = getPackage(path.join(opts.base, opts.moduleDirectory, names[0]));
                     return result(dependency, getPossiblePaths(path.join(dependency, getMain(pkg)), opts.moduleDirectory, ['.js']), true);
                 } else {
-                    let possiblePaths = getPossiblePaths(dependency, opts.moduleDirectory, true);
-                    return result(dependency, getPossiblePaths())
+                    let possiblePaths = getPossiblePaths(dependency, opts.moduleDirectory, ['.js']);
+                    return result(dependency, possiblePaths, true);
                 }
             } else {
                 if (!opts.paths.length) {
