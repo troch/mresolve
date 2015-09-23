@@ -63,7 +63,7 @@ function resolve(opts = {}) {
     }
 
     return {
-        resolveDependency: function(dependency, relativeTo) {
+        resolveDependency: function (dependency, relativeTo) {
             if (!dependency) throw new Error(`[mresolve] missing dependency string in resolve(dependency)`);
             let names = dependency.split('/');
 
