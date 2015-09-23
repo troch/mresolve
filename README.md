@@ -7,7 +7,7 @@ from your application and its dependants.
 
 ## API
 
-#### _mresolve(opts)_
+#### mresolve(opts)
 
 Create a new resolver with the specified options:
 - `base`: your application / repository base path (default to `process.cwd()`)
@@ -29,7 +29,7 @@ If `dependency` is relative, do not forget to pass to the function the directory
 
 ## Usage
 
-```
+```javascript
 import mresolve from 'mresolve'
 
 let resolver = resolve({
