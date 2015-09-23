@@ -8,7 +8,7 @@ require('mocha');
 
 describe('mresolve', function () {
     var resolver = resolve({
-        base: path.join(process.cwd(), 'example'),
+        base: path.join(__dirname, '..', 'example'),
         paths: ['']
     });
 
@@ -32,7 +32,7 @@ describe('mresolve', function () {
 
     it('should throw an error if it cannot access package info of an npm dependency', function () {
         (function() {
-            resolver.resolveDependency('modC');
+            resolver.resolveDependency('mod-c');
         }).should.throw();
     });
 
@@ -49,32 +49,32 @@ describe('mresolve', function () {
 
     it('should resolve npm dependencies', function () {
 
-        var dependencyInfo = resolver.resolveDependency('modA');
+        var dependencyInfo = resolver.resolveDependency('mod-a');
 
-        dependencyInfo.dependencyName.should.equal('modA');
+        dependencyInfo.dependencyName.should.equal('mod-a');
         dependencyInfo.npmDependency.should.be.true;
-        dependencyInfo.possiblePaths.should.eql(['node_modules/modA/index.js']);
+        dependencyInfo.possiblePaths.should.eql(['node_modules/mod-a/index.js']);
 
 
-        dependencyInfo = resolver.resolveDependency('modB');
+        dependencyInfo = resolver.resolveDependency('mod-b');
 
-        dependencyInfo.dependencyName.should.equal('modB');
+        dependencyInfo.dependencyName.should.equal('mod-b');
         dependencyInfo.npmDependency.should.be.true;
-        dependencyInfo.possiblePaths.should.eql(['node_modules/modB/dist/index.js', 'node_modules/modB/dist/index/index.js']);
+        dependencyInfo.possiblePaths.should.eql(['node_modules/mod-b/dist/index.js', 'node_modules/mod-b/dist/index/index.js']);
 
 
-        dependencyInfo = resolver.resolveDependency('modA/component');
+        dependencyInfo = resolver.resolveDependency('mod-a/component');
 
-        dependencyInfo.dependencyName.should.equal('modA/component');
+        dependencyInfo.dependencyName.should.equal('mod-a/component');
         dependencyInfo.npmDependency.should.be.true;
-        dependencyInfo.possiblePaths.should.eql(['node_modules/modA/component.js', 'node_modules/modA/component/index.js']);
+        dependencyInfo.possiblePaths.should.eql(['node_modules/mod-a/component.js', 'node_modules/mod-a/component/index.js']);
 
 
-        dependencyInfo = resolver.resolveDependency('modA/component.js');
+        dependencyInfo = resolver.resolveDependency('mod-a/component.js');
 
-        dependencyInfo.dependencyName.should.equal('modA/component.js');
+        dependencyInfo.dependencyName.should.equal('mod-a/component.js');
         dependencyInfo.npmDependency.should.be.true;
-        dependencyInfo.possiblePaths.should.eql(['node_modules/modA/component.js']);
+        dependencyInfo.possiblePaths.should.eql(['node_modules/mod-a/component.js']);
     });
 
     it('should resolve relative dependencies', function () {

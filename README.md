@@ -1,3 +1,7 @@
+[![npm version](https://badge.fury.io/js/mresolve.svg)](http://badge.fury.io/js/mresolve)
+[![Build Status](https://travis-ci.org/troch/mresolve.svg)](https://travis-ci.org/troch/mresolve?branch=master)
+[![Coverage Status](https://coveralls.io/repos/troch/mresolve/badge.svg?branch=master&service=github)](https://coveralls.io/github/troch/mresolve?branch=master)
+
 # mresolve
 
 _Resolve module dependencies to a list of possible paths_.
