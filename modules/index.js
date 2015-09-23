@@ -9,6 +9,7 @@ let defaultOpts = {
 
 let npmRegistry = {};
 
+
 function getPackage(dir = '') {
     try {
         if (npmRegistry[dir]) return npmRegistry[dir];
@@ -32,64 +33,64 @@ function isRelative(path) {
     return /^\.{1,2}(?:\/|\\)/.test(path);
 }
 
-function resolve(opts = defaultOpts) {
+function resolve(opts = {}) {
+    opts = {...defaultOpts, ...opts};
+    let extensionRegex = new RegExp('\\.(?:' + opts.extensions.map(e => e.replace(/^\./, '')).join('|') + ')$');
     let npmDependencies = getDependencies(getPackage(opts.base));
 
-    function result(dependencyName, directory = '') {
+    function result(dependencyName, possiblePaths, npmDependency = false) {
         return {
             base: opts.base,
             dependencyName,
-            npmDependency: false,
-            possiblePaths: getPossiblePaths(dependencyName, directory)
-        }
+            npmDependency,
+            possiblePaths
+        };
     }
 
-    function npmResult(dependencyName, main) {
-        return {
-            base: opts.base,
-            dependencyName,
-            npmDependency: true,
-            possiblePaths: [main]
-        }
-    }
+    function getPossiblePaths(fromPath, directory = '', extensions) {
+        if (extensionRegex.test(fromPath)) return [path.join(directory, fromPath)];
 
-    function getPossiblePaths(fromPath, directory = '') {
         let possiblePaths = [];
 
-        opts.extensions.forEach(ext => {
-            possiblePaths.push(path.join(directory, fromPath, 'index' + ext));
+        (extensions || opts.extensions).forEach(ext => {
+            console.log(possiblePaths);
             if (!/(\\|\/)$/.test(fromPath)) {
                 possiblePaths.push(path.join(directory, fromPath + ext));
             }
+            possiblePaths.push(path.join(directory, fromPath, 'index' + ext));
         });
 
         return possiblePaths;
     }
 
     return {
-        resolveDependency: function(dependency, dir) {
-            // console.log(Object.keys(path), path.relative(opts.base, path.join(path.join(opts.base, 'modules'), '../dist/index.js')));
-            // console.log(result('dist'));
-
+        resolveDependency: function(dependency, relativeTo) {
             if (!dependency) throw new Error(`[mresolve] missing dependency string in resolve(dependency)`);
             let names = dependency.split('/');
-            let possiblePaths = [];
 
             if (isRelative(dependency)) {
-                if (!dir) throw new Error(`[mresolve] missing directory in resolve(dependency, directory) for relative path ${dependency}`);
-                // opts.paths.forEach(p => {
-                //     opts.extensions.forEach()
-                // });
-            } else if (npmDependencies.indexOf(names[0]) !== -1) {
+                if (!relativeTo) throw new Error(`[mresolve] missing relativeTo in resolve(dependency, relativeTo) for relative path ${dependency}`);
+                dependency = path.relative(opts.base, path.join(opts.base, relativeTo, dependency));
+                let possiblePaths = getPossiblePaths(dependency, '');
+                return result(dependency, possiblePaths);
+            }
+            if (npmDependencies.indexOf(names[0]) !== -1) {
                 if (names.length === 1) {
                     let pkg = getPackage(path.join(opts.base, opts.moduleDirectory, names[0]));
-                    return npmResult(dependency, getMain(pkg));
+                    return result(dependency, getPossiblePaths(path.join(dependency, getMain(pkg)), opts.moduleDirectory, ['.js']), true);
+                } else {
+                    let possiblePaths = getPossiblePaths(dependency, opts.moduleDirectory, true);
+                    return result(dependency, getPossiblePaths())
                 }
-            //         if (dependencyMains[names[0]]) return dependencyMains[0];
-            //         return fileExists(dependency)
-            //     } else {
-            //         return fileExi
-            //     }
+            } else {
+                if (!opts.paths.length) {
+                    throw new Error(`[mresolve] absolute path ${dependency} not found in package dependencies. Missing module or additional path?`);
+                }
+                let possiblePaths = [];
+                opts.paths.forEach(directory => {
+                    possiblePaths = possiblePaths.concat(getPossiblePaths(dependency, directory));
+                });
+                return result(dependency, possiblePaths);
             }
         }
     };
