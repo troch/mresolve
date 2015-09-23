@@ -2,6 +2,10 @@
 
 _Resolve module dependencies to a list of possible paths_.
 
+```sh
+npm install --save mresolve
+```
+
 > This module doesn't access files directly and doesn't check if a file exists. It only access `package.json` files
 from your application and its dependants.
 
