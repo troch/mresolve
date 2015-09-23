@@ -73,8 +73,7 @@ function resolve(opts = {}) {
                 dependency = path.relative(opts.base, path.join(opts.base, relativeTo, dependency));
                 let possiblePaths = getPossiblePaths(dependency, '');
                 return result(dependency, possiblePaths);
-            }
-            if (npmDependencies.indexOf(names[0]) !== -1) {
+            } else if (npmDependencies.indexOf(names[0]) !== -1) {
                 if (names.length === 1) {
                     let pkg = getPackage(path.join(opts.base, opts.moduleDirectory, names[0]));
                     return result(dependency, getPossiblePaths(path.join(dependency, getMain(pkg)), opts.moduleDirectory, ['.js']), true);
