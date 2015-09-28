@@ -90,7 +90,7 @@ function resolve() {
             var names = dependency.split('/');
 
             if (isRelative(dependency)) {
-                if (!relativeTo) throw new Error('[mresolve] missing relativeTo in resolve(dependency, relativeTo) for relative path ' + dependency);
+                if (relativeTo === undefined) throw new Error('[mresolve] missing relativeTo in resolve(dependency, relativeTo) for relative path ' + dependency);
                 dependency = _path2['default'].relative(opts.base, _path2['default'].join(opts.base, relativeTo, dependency));
                 var possiblePaths = getPossiblePaths(dependency);
                 return result(dependency, possiblePaths);

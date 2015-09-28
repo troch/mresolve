@@ -1,6 +1,6 @@
 {
   "name": "mresolve",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Resolve module dependencies to paths",
   "main": "dist/index.js",
   "scripts": {
